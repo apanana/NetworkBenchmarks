@@ -51,12 +51,20 @@ Services:
 
 
 ###Step 5 Select Factors to Study
-####Dependent Variable:
-* Mean response time:
-####Independent Variables:
-* Number of requests:
-* Time interval between requests:
-* Packet size:
+#####Dependent Variable:
+* Mean response time
+
+#####Independent Variables:
+* Requests per second
+
+#####Constant Variables:
+* Number of requests
+* Packet size
+
+#####Other Variables:
+* Average key/val size
+* "Inter arrival-gap"
+?? These are not "constant" but will model ETC workload of memcache
 
 ###Step 6 Select Evaluation Technique
 * Simulation:
