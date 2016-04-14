@@ -62,18 +62,19 @@ Services:
 * Packet size
 
 #####Other Variables:
+??These are not "constant" but will model ETC workload of memcache??
 * Average key/val size
 * "Inter arrival-gap"
-?? These are not "constant" but will model ETC workload of memcache
+
 
 ###Step 6 Select Evaluation Technique
 * Simulation:
 	We aim to model our throughput on the ETC workload of Facebook's memcache and measure our networked cache's performance against that workload.
+(We will not be measuring a real system since we do not have a real system to test)
 
-(We do not have a real system to test and we do not have enough information to model our cache).
 
 ###Step 7 Select Workload
-Our simulation aim's to mimic the workload of FB's memcache.
+Our simulation aim's to mimic the workload of FB's memcache while varying the requests per second. 
 
 
 ###Step 8 Design Experiments
