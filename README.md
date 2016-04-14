@@ -18,15 +18,35 @@ Leaving out the recursive flag will make git ignore the submodule jsmn and stunt
 
 
 <br />
-###Step 1 State Goals and Define the System:
+###Step 1 State Goals and Define the System
+Goals: To benchmark the performance over various inputs and systems
+System: Networked cache and client
 
-###Step 2 List Services and Outcomes:
+
+###Step 2 List Services and Outcomes
+Services:
+* SET /k/v: Sets a key-value pair in the cache. Creates entries for new keys and overwrites values for existing keys.
+* GET /k: Retrieves at key-value pair from the cache. Returns the value corresponding to the key and the value size if the key exists in the cache, and returns NULL otherwise.
+* DELETE /k: Deletes a key-value pair from the cache. No effect on the cache if key does not exist.
+
 
 ###Step 3 Select Metrics
+* Sustained throughput, defined as the maximum offered load (in requests per second) at which the mean response time remains under 1 millisecond. 
+* Accuracy of GET requests, defined as the maximum number of packets at which average success rate is over 95%. (this may change!)
 
 ###Step 4 List Parameters
+* Systems:
+** Server/Client OS
+** Server/Client CPU speed
+** Network bandwidth
+
+* Workload:
+** Time intervals between request
+** Average key/val size
+** Packet size
 
 ###Step 5 Select Factors to Study
+
 
 ###Step 6 Select Evaluation Technique
 
