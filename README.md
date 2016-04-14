@@ -34,21 +34,28 @@ Services:
 * Sustained throughput, defined as the maximum offered load (in requests per second) at which the mean response time remains under 1 millisecond. 
 * Accuracy of GET requests, defined as the maximum number of packets at which average success rate is over 95%. (this may change!)
 
+
 ###Step 4 List Parameters
 * Systems:
-** Server/Client OS
-** Server/Client CPU speed
-** Network bandwidth
+	* Server/Client OS
+	* Server/Client CPU speed
+	* Network bandwidth
 
 * Workload:
-** Time intervals between request
-** Average key/val size
-** Packet size
+	* Number of requests
+	* Time intervals between request
+	* Average key/val size
+	* Packet size
+
 
 ###Step 5 Select Factors to Study
-
+* Number of requests:
+* Time interval between requests:
+* Packet size:
 
 ###Step 6 Select Evaluation Technique
+* Measuring a real system:
+	We will measure the system's performance directly
 
 ###Step 7 Select Workload
 
