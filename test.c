@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <stdlib.h>
-//#include <mach/mach_time.h>
+#include <mach/mach_time.h>
 #include "testing.h"
 #include "client.h"
 
@@ -452,7 +452,7 @@ void test_get_head()
   get_head(cache);
   destroy_cache(cache);
 }
-/*
+
 void test_gets()
 {
   cache_t cache = init();
@@ -462,31 +462,43 @@ void test_gets()
   cache_set(cache,key,val,strlen(val) + 1);
 
   uint32_t val_size = 0;
-  
-  // Get the timebase info 
+
+  // Get the timebase info
   mach_timebase_info_data_t info;
   mach_timebase_info(&info);
 
+  uint64_t errors = 0;
+  const uint64_t requests = 100000;
+  const double nsToSec = 1000000000;
+  const nsToms = 1000000;
   uint64_t start = mach_absolute_time();
-  for(int i = 0; i < 1000; ++i)
+  for(int i = 0; i < requests; ++i)
     {
-      free(cache_get(cache,key,&val_size));
+      if( cache_get(cache,key,&val_size) == -1)
+        {
+          sleep(10);
+          ++errors;
+        }
     }
   uint64_t end = mach_absolute_time();
-
-  uint64_t duration = end - start;
+  uint64_t duration = end - start - errors*10*nsToSec;
 
   // Convert to nanoseconds
   duration *= info.numer;
   duration /= info.denom;
 
-  duration /= 1000;
+  uint64_t ns = duration;
+  double time_elapsed_sec = duration / nsToSec;
 
-  printf("Time per Get: %llu nanoseconds\n",duration);
+  double requests_per_second = requests / time_elapsed_sec;
+  double ms = (double) ns / (requests * nsToms);
+
+  printf("Time per Get: %f milliseconds\n",ms);
+  printf("Requests per second: %f requests\n",requests_per_second);
 
   destroy_cache(cache);
 }
-*/
+
 
 int main(int argc, char *argv[])
 {
@@ -503,7 +515,7 @@ int main(int argc, char *argv[])
         udpport = argv[i+1];
     }
 
-
+  /*
   evict_after_get();
   cache_returns_bad_pointers();
   cache_insert_huge();
@@ -524,5 +536,6 @@ int main(int argc, char *argv[])
   //cache_does_not_change_maxmem();
   //custom_hash();
   test_get_head();
-  //test_gets(); //udp test
+  */
+  test_gets(); //udp test
 }

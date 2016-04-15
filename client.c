@@ -159,6 +159,11 @@ val_type cache_get(cache_t cache, key_type key, uint32_t *val_size)
 {
   //establish connection
   int udpfd = establish_udp_client(cache);
+  if ( udpfd == -1 )
+    {
+      close(udpfd);
+      return -1;
+    }
 
   //define buffer and encoded buffer specs
   //10 is arbitrary, just needs to be big enough for GET keyword
@@ -169,7 +174,10 @@ val_type cache_get(cache_t cache, key_type key, uint32_t *val_size)
 
   //send it off
   if ( senddgrams(udpfd,sendbuff,strlen(sendbuff) + 1,cache->udpinfo->ai_addr,cache->udpinfo->ai_addrlen) < 0)
-    return NULL;
+    {
+      close(udpfd);
+      return NULL;
+    }
 
   free(sendbuff);
 
@@ -177,6 +185,7 @@ val_type cache_get(cache_t cache, key_type key, uint32_t *val_size)
   char *recvbuff = recvdgrams(udpfd,cache->udpinfo->ai_addr);
   if(recvbuff == NULL)
     {
+      close(udpfd);
       return NULL;
     }
 

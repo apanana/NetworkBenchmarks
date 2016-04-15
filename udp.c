@@ -61,7 +61,6 @@ int establish_udp_client(cache_t cache)
       printf("socket error.\n");
       exit(1);
     }
-
   //set socket timeout to 1000ms
   struct timeval tv;
   tv.tv_sec = 0;
@@ -94,6 +93,7 @@ int senddgrams(int fd, char *buffer, int size, struct sockaddr *to, socklen_t le
 
 char* recvdgrams(int fd, struct sockaddr_storage *from)
 {
+  static fails = 0;
   char buffer[MAXLINE] = {0};
   char *response = calloc(MAXLINE,1);
   uint32_t total = 0,
@@ -107,7 +107,7 @@ char* recvdgrams(int fd, struct sockaddr_storage *from)
       bytes = recvfrom(fd,buffer,MAXLINE,0,(struct sockaddr *)from, &size);
       if(bytes == -1)
         {
-          printf("Read failed\n");
+          printf("Read failed: %d\n",++fails);
 	  free(response);
           return NULL;
         }
