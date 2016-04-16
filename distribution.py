@@ -13,17 +13,9 @@ starting from 15 bytes, to be Generalized Pareto with parameters theta = 0, sigm
 can be modeled separately as a discrete probability distribution whose values are given in Table 5.
 """
 r = genextreme.rvs(c=0.078688, loc = 30.7984, scale = 8.20449, size=1000)
-print(r)
-print(sum(r)/1000)
 r = [int(x) for x in r]
 print(r)
-print(sum(r)/1000)
-
-print("\n\n\n\n")
 
 p = genpareto.rvs(c=0.348238 , loc = 0, scale = 214.476, size=1000)
-print(p)
-print(sum(p)/1000)
 p = [int(x) for x in p]
 print(p)
-print(sum(p)/1000)
