@@ -468,7 +468,7 @@ void test_gets()
   mach_timebase_info(&info);
 
   uint64_t errors = 0;
-  const uint64_t requests = 100000;
+  const uint64_t requests = 10;
   const double nsToSec = 1000000000;
   const nsToms = 1000000;
   uint64_t start = mach_absolute_time();
@@ -502,7 +502,7 @@ void test_gets()
 
 int main(int argc, char *argv[])
 {
-  hostname = "127.0.0.1";
+  hostname = "134.10.103.234";
   tcpport = "2001";
   udpport = "3001";
   for(int i = 2;i < argc; ++i)
