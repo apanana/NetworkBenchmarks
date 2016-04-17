@@ -20,7 +20,7 @@ int establish_udp_server(char *udpport)
 {
   struct addrinfo hints, *res;
 
-  //setup tcp
+  //setup udp
   memset(&hints,0,sizeof(hints));
   hints.ai_family = AF_UNSPEC;
   hints.ai_socktype = SOCK_DGRAM;
@@ -36,6 +36,14 @@ int establish_udp_server(char *udpport)
 
   int socket_fd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
 
+  int yes = 1;
+  if (setsockopt(socket_fd, SOL_SOCKET, SO_REUSEADDR, &yes,sizeof(int)) == -1){
+    printf("TCP setup: setsockopt error\n");
+    close(socket_fd);
+    freeaddrinfo(res);
+    exit(1);
+  }
+
   //set socket timeout to 1000ms
   struct timeval tv;
   tv.tv_sec = 0;
@@ -49,7 +57,7 @@ int establish_udp_server(char *udpport)
       printf("bind error.\n");
       exit(1);
     }
-
+  freeaddrinfo(res);
   return socket_fd;
 }
 
