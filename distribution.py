@@ -23,10 +23,19 @@ Following is taken from the paper. (wrote greek letter names in full bc they don
 
 Below: c = k, loc = mu/theta, scale = sigma, size = user-specified
 """
-r = genextreme.rvs(c=0.078688, loc = 30.7984, scale = 8.20449, size=n)
-r = [int(x) for x in r]
-print(r)
+rs = genextreme.rvs(c=0.078688, loc = 30.7984, scale = 8.20449, size=n)
+rs = [str(int(x)) for x in rs]
+# print(rs)
 
-p = genpareto.rvs(c=0.348238 , loc = 0, scale = 214.476, size=n)
-p = [int(x) for x in p]
-print(p)
+ps = genpareto.rvs(c=0.348238 , loc = 0, scale = 214.476, size=n)
+ps = [str(int(x)) for x in ps]
+# print(ps)
+
+outstring = ""
+for i in range(len(rs)-1):
+	outstring = outstring + rs[i] + " "
+outstring += rs[len(rs)-1] + "\n"
+for i in range(len(ps)-1):
+	outstring = outstring + ps[i] + " "
+outstring += ps[len(ps)-1]
+print(outstring)
