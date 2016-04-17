@@ -25,11 +25,9 @@ Below: c = k, loc = mu/theta, scale = sigma, size = user-specified
 """
 rs = genextreme.rvs(c=0.078688, loc = 30.7984, scale = 8.20449, size=n)
 rs = [str(int(x)) for x in rs]
-print(rs)
 
 ps = genpareto.rvs(c=0.348238 , loc = 0, scale = 214.476, size=n)
 ps = [str(int(x)) for x in ps]
-print(ps)
 
 def p_to_c(xs):
 	out = ""
