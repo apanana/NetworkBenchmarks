@@ -25,17 +25,18 @@ Below: c = k, loc = mu/theta, scale = sigma, size = user-specified
 """
 rs = genextreme.rvs(c=0.078688, loc = 30.7984, scale = 8.20449, size=n)
 rs = [str(int(x)) for x in rs]
-# print(rs)
+print(rs)
 
 ps = genpareto.rvs(c=0.348238 , loc = 0, scale = 214.476, size=n)
 ps = [str(int(x)) for x in ps]
-# print(ps)
+print(ps)
 
-outstring = ""
-for i in range(len(rs)-1):
-	outstring = outstring + rs[i] + " "
-outstring += rs[len(rs)-1] + "\n"
-for i in range(len(ps)-1):
-	outstring = outstring + ps[i] + " "
-outstring += ps[len(ps)-1]
+def p_to_c(xs):
+	out = ""
+	for x in xs:
+		out += x + " "
+	out += "\n"
+	return out
+
+outstring = p_to_c(rs) + p_to_c(ps)
 print(outstring)
