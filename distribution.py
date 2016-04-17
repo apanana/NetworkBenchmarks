@@ -1,7 +1,10 @@
 from scipy.stats import genextreme
 from scipy.stats import genpareto
+import sys
 
-n = int(input("Specify number of keys/vals:\n"))
+if sys.argv == None or len(sys.argv)!= 2:
+	sys.exit()
+n = int(sys.argv[1])
 
 """
 Following is taken from the paper. (wrote greek letter names in full bc they don't exist in this character encoding)
