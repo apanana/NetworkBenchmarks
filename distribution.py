@@ -1,10 +1,5 @@
 from scipy.stats import genextreme
 from scipy.stats import genpareto
-import sys
-
-if sys.argv == None or len(sys.argv)!= 2:
-	sys.exit()
-n = int(sys.argv[1])
 
 """
 Following is taken from the paper. (wrote greek letter names in full bc they don't exist in this character encoding)
@@ -23,19 +18,25 @@ Following is taken from the paper. (wrote greek letter names in full bc they don
 
 Below: c = k, loc = mu/theta, scale = sigma, size = user-specified
 """
-rs = genextreme.rvs(c=0.078688, loc = 30.7984, scale = 8.20449, size=n)
-rs = [str(int(r)) for r in rs]
-
-ps = genpareto.rvs(c=0.348238 , loc = 0, scale = 214.476, size=n)
-ps = [(p+1) for p in ps]
-ps = [str(int(p)) for p in ps]
 
 def p_to_c(xs):
+	# Helper function. Turns a python string list into a single string that ends with a '\n'
+	# so that it can be easily read by C
 	out = ""
 	for x in xs:
 		out += x + " "
 	out += "\n"
 	return out
 
-outstring = p_to_c(rs) + p_to_c(ps)
-print(outstring)
+def gen_keys(n):
+	ks = genextreme.rvs(c=0.078688, loc = 30.7984, scale = 8.20449, size=n)
+	ks = [str(int(k)) for k in ks]
+	out = p_to_c(ks)
+	return out
+
+def gen_vals(n):
+	vs = genpareto.rvs(c=0.348238 , loc = 0, scale = 214.476, size=n)
+	vs = [(v+1) for v in vs]
+	vs = [str(int(v)) for v in vs]
+	out = p_to_c(vs)
+	return out
