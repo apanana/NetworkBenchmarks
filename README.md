@@ -52,19 +52,19 @@ Services:
 
 ###Step 5 Select Factors to Study
 #####Dependent Variable:
-* Mean response time
+* Mean response time ("Inter arrival-gap")
 
 #####Independent Variables:
-* Requests per second
+* Requests per second 
 
 #####Constant Variables:
 * Number of requests
 * Packet size
 
 #####Other Variables:
-??These are not "constant" but will model ETC workload of memcache??
+(These values are modeled on the distributions outlined in the FB Memcache paper.)
 * Average key/val size
-* "Inter arrival-gap"
+
 
 
 ###Step 6 Select Evaluation Technique
@@ -78,8 +78,12 @@ Our simulation aim's to mimic the workload of FB's memcache while varying the re
 
 
 ###Step 8 Design Experiments
-We will use mutilate to generate our distributions.
+##### Setup:
+We use Python's SciPy library to generate random variables for key and val size according the the distributions given in the paper. We then pipe these to our server to generate key/val pairs of corresponding size. We also pass this information to the client so that we generate requests for corresponding data in the server.
 
+##### Method:
+We use a python script to spawn multiple clients that draw requests from the same server. Each client is timed for the amount of time it takes complete all of its requests (we don't care about the error rate of UDP so much, as long as it doesn't look unrealistically high). This is then averaged to find a mean response time for requests.
+^^^ Need a way to manipulate request rate independently.
 
 ###Step 9 Analyze and Interpret Data
 ~~
