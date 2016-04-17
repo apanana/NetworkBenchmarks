@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include <assert.h>
 #include <stdlib.h>
-#include <mach/mach_time.h>
+//#include <mach/mach_time.h>
 #include "testing.h"
 #include "client.h"
+#include <time.h>
 
 char *hostname;
 char *tcpport;
@@ -453,39 +454,49 @@ void test_get_head()
   destroy_cache(cache);
 }
 
-void test_gets()
+void test_gets(uint8_t* keys, uint32_t* values, uint64_t numpairs)
 {
-  cache_t cache = init();
+  cache_t cache = create_cache(numpairs*10);
+  char **keystrings = calloc(numpairs,sizeof(char*));
 
-  key_type key = "the get key";
-  val_type val = "the get value";
-  cache_set(cache,key,val,strlen(val) + 1);
+  for(int i = 0; i < numpairs; ++i)
+    {
+      keystrings[i] = calloc(keys[i],1);
+      char value[values[i]];
+      memset(keystrings[i],'K',keys[i] - 1);
+      memset(value,'V',values[i] - 1);
+      keystrings[i][keys[i] - 1] = '\0';
+      value[values[i] - 1] = '\0';
+      cache_set(cache,keystrings[i],value,values[i]);
+    }
 
   uint32_t val_size = 0;
 
   // Get the timebase info
-  mach_timebase_info_data_t info;
-  mach_timebase_info(&info);
+  //mach_timebase_info_data_t info;
+  //mach_timebase_info(&info);
 
   uint64_t errors = 0;
-  const uint64_t requests = 10;
+  const uint64_t requests = numpairs;
   const double nsToSec = 1000000000;
-  const nsToms = 1000000;
-  uint64_t start = mach_absolute_time();
+  const uint32_t nsToms = 1000000;
+  //uint64_t start = mach_absolute_time();
+  struct timespec start, end;
+  clock_gettime(CLOCK_MONOTONIC,&start);
   for(int i = 0; i < requests; ++i)
     {
-      if( cache_get(cache,key,&val_size) == -1)
-        {
-          sleep(10);
-          ++errors;
-        }
+      cache_get(cache,keystrings[i],&val_size);
+      if( val_size == 0) ++errors;
+      val_size = 0;
     }
-  uint64_t end = mach_absolute_time();
-  uint64_t duration = end - start - errors*10*nsToSec;
+  //uint64_t end = mach_absolute_time();
+  clock_gettime(CLOCK_MONOTONIC,&end);
+  //uint64_t duration = end - start - errors*10*nsToSec;
+  uint64_t duration = (end.tv_sec * nsToSec + end.tv_nsec) - (start.tv_sec * nsToSec + start.tv_nsec);
 
   // Convert to nanoseconds
-  duration *= info.numer;
-  duration /= info.denom;
+  //duration *= info.numer;
+  //duration /= info.denom;
 
   uint64_t ns = duration;
   double time_elapsed_sec = duration / nsToSec;
@@ -495,6 +506,7 @@ void test_gets()
 
   printf("Time per Get: %f milliseconds\n",ms);
   printf("Requests per second: %f requests\n",requests_per_second);
+  printf("Percent of Requests that failed: %f\n",((double)errors/requests));
 
   destroy_cache(cache);
 }
@@ -505,7 +517,7 @@ int main(int argc, char *argv[])
   hostname = "134.10.103.234";
   tcpport = "2001";
   udpport = "3001";
-  for(int i = 2;i < argc; ++i)
+  /*  for(int i = 2;i < argc; ++i)
     {
       if(!strcmp(argv[i],"-h"))
         hostname = argv[i+1];
@@ -514,6 +526,14 @@ int main(int argc, char *argv[])
       else if(!strcmp(argv[i],"-u"))
         udpport = argv[i+1];
     }
+  */
+  int i,j = 0;
+  uint64_t numpairs = (argc - 1)/2;
+  uint8_t *keys = calloc(numpairs,sizeof(uint8_t));
+  uint32_t *values = calloc(numpairs,sizeof(uint32_t));
+  for( i = 1; argv[i] != '\n'; ++i) keys[i-1] = argv[i];
+  for( ; i < argc; ++i) values[j++] = argv[i];
+
 
   /*
   evict_after_get();
@@ -537,5 +557,5 @@ int main(int argc, char *argv[])
   //custom_hash();
   test_get_head();
   */
-  test_gets(); //udp test
+  test_gets(keys,values,numpairs); //udp test
 }
