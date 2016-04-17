@@ -2,6 +2,8 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <mach/mach_time.h>
+#include <inttypes.h>
+
 #include "client.h"
 //#include <time.h>
 
@@ -70,6 +72,33 @@ void test_gets(uint8_t* keys, uint32_t* values, uint64_t numpairs)
   destroy_cache(cache);
 }
 
+uint8_t *key_gen(uint64_t numpairs){
+  uint8_t k;
+  uint8_t *keys = calloc(numpairs,sizeof(uint8_t));
+  int i = 0;
+  while (scanf("%"PRIu8,&k) == 1)
+  {
+    keys[i++] = k;
+    if( i >= numpairs){
+      break;     
+    }
+  }
+  return keys;
+}
+
+uint32_t *val_gen(uint64_t numpairs){
+  uint32_t v;
+  uint32_t *values = calloc(numpairs,sizeof(uint32_t));
+  int i = 0;
+  while (scanf("%"PRIu32,&v) == 1)
+    {
+      if( i >= numpairs )
+        break;
+      values[i++] = v;
+    }
+  return values;
+}
+
 
 int main(int argc, char *argv[])
 {
@@ -84,21 +113,15 @@ int main(int argc, char *argv[])
   uint8_t *keys = calloc(numpairs,sizeof(uint8_t));
   uint32_t *values = calloc(numpairs,sizeof(uint32_t));
 
-  while (scanf("%d",&k) == 1)
-    {
-      if( i >= numpairs - 1)
-        break;
+  keys = key_gen(numpairs);
+  values = val_gen(numpairs);
+  for(;i<numpairs;i++){
+    printf("i: %d, %d \n",i,keys[i]);
+  }
+  printf("\n");
+  for(;j<numpairs;j++){
+    printf("j: %d, %d \n",j,values[j]);
+  }
 
-      keys[i++] = k;
-    }
-
-  while (scanf("%d",&l) == 1)
-    {
-      if( j >= numpairs )
-        break;
-
-      values[j++] = l;
-    }
-
-  test_gets(keys,values,numpairs); //udp test
+  // test_gets(keys,values,numpairs); //udp test
 }

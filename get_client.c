@@ -30,9 +30,7 @@ cache_t make_cache(uint64_t maxmem)
   //create local cache object
   cache_t cache = calloc(1,sizeof(struct cache_obj));
   cache->host = hostname;
-  cache->tcpport = tcpport;
   cache->udpport = udpport;
-  cache->tcpinfo = calloc(1,sizeof(struct addrinfo));
   cache->udpinfo = calloc(1,sizeof(struct addrinfo));
 
   struct addrinfo hints;
@@ -48,21 +46,8 @@ cache_t make_cache(uint64_t maxmem)
       free(cache);
       exit(1);
     }
-
-  memset(&hints, 0, sizeof(hints));
-  hints.ai_family = AF_UNSPEC;
-  hints.ai_socktype = SOCK_STREAM;
-  if( (status = getaddrinfo(cache->host, cache->tcpport, &hints, &cache->tcpinfo)) != 0)
-    {
-      printf("getaddrinfo error for tcp: %s\n", gai_strerror(status));
-      freeaddrinfo(cache->tcpinfo);
-      free(cache);
-      exit(1);
-    }
   return cache;
 }
-
-
 
 void test_gets(uint8_t* keys, uint64_t numpairs)
 {
@@ -75,7 +60,6 @@ void test_gets(uint8_t* keys, uint64_t numpairs)
       memset(keystrings[i],'K',keys[i]);
       keystrings[i][keys[i] - 1] = '\0';
     }
-
   uint32_t val_size = 0;
 
   // Get the timebase info
