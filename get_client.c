@@ -1,33 +1,80 @@
 #include <stdio.h>
+#include <stdint.h>
 #include <assert.h>
 #include <stdlib.h>
 #include <mach/mach_time.h>
-#include "client.h"
-//#include <time.h>
 
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <netdb.h>
+#include <unistd.h>
+#include <errno.h>
+#include "client.h"
 char *hostname;
 char *tcpport;
 char *udpport;
 
-void test_gets(uint8_t* keys, uint32_t* values, uint64_t numpairs)
+struct cache_obj
 {
-  cache_t cache = create_cache(numpairs*10);
+  char* host;
+  char* tcpport;
+  char* udpport;
+  struct addrinfo *tcpinfo;
+  struct addrinfo *udpinfo;
+};
 
+cache_t make_cache(uint64_t maxmem)
+{
+  //create local cache object
+  cache_t cache = calloc(1,sizeof(struct cache_obj));
+  cache->host = hostname;
+  cache->tcpport = tcpport;
+  cache->udpport = udpport;
+  cache->tcpinfo = calloc(1,sizeof(struct addrinfo));
+  cache->udpinfo = calloc(1,sizeof(struct addrinfo));
+
+  struct addrinfo hints;
+  int status;
+
+  memset(&hints, 0, sizeof(hints));
+  hints.ai_family = AF_UNSPEC;
+  hints.ai_socktype = SOCK_DGRAM;
+  if ((status = getaddrinfo(cache->host, "3001", &hints, &cache->udpinfo)) != 0)
+    {
+      fprintf(stderr, "getaddrinfo for udp: %s\n", gai_strerror(status));
+      freeaddrinfo(cache->udpinfo);
+      free(cache);
+      exit(1);
+    }
+
+  memset(&hints, 0, sizeof(hints));
+  hints.ai_family = AF_UNSPEC;
+  hints.ai_socktype = SOCK_STREAM;
+  if( (status = getaddrinfo(cache->host, cache->tcpport, &hints, &cache->tcpinfo)) != 0)
+    {
+      printf("getaddrinfo error for tcp: %s\n", gai_strerror(status));
+      freeaddrinfo(cache->tcpinfo);
+      free(cache);
+      exit(1);
+    }
+  return cache;
+}
+
+
+
+void test_gets(uint8_t* keys, uint64_t numpairs)
+{
+  cache_t cache = make_cache(0);
   char **keystrings = calloc(numpairs,sizeof(char*));
-  char **valstrings = calloc(numpairs,sizeof(char*));
 
   for(int i = 0; i < numpairs; ++i)
     {
       keystrings[i] = calloc(keys[i],1);
-      valstrings[i] = calloc(values[i],1);
       memset(keystrings[i],'K',keys[i]);
-      memset(valstrings[i],'V',values[i]);
       keystrings[i][keys[i] - 1] = '\0';
-      valstrings[i][values[i] - 1] = '\0';
-      cache_set(cache,keystrings[i],valstrings[i],values[i]);
-      free(valstrings[i]);
     }
-  free(valstrings);
 
   uint32_t val_size = 0;
 
@@ -66,10 +113,7 @@ void test_gets(uint8_t* keys, uint32_t* values, uint64_t numpairs)
   printf("Time per Get: %f milliseconds\n",ms);
   printf("Requests per second: %f requests\n",requests_per_second);
   printf("Percent of Requests that failed: %f,%d,%d\n",((double)errors/requests),errors,requests);
-
-  destroy_cache(cache);
 }
-
 
 int main(int argc, char *argv[])
 {
@@ -100,5 +144,5 @@ int main(int argc, char *argv[])
       values[j++] = l;
     }
 
-  test_gets(keys,values,numpairs); //udp test
+  test_gets(keys,numpairs); //udp test
 }
