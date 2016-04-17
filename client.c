@@ -186,7 +186,7 @@ val_type cache_get(cache_t cache, key_type key, uint32_t *val_size)
   if(recvbuff == NULL)
     {
       close(udpfd);
-      return NULL;
+      return -1;
     }
 
   //printf("Server Response: %s\n",recvbuff);

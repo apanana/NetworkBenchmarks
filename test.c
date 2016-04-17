@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <assert.h>
 #include <stdlib.h>
-//#include <mach/mach_time.h>
+#include <mach/mach_time.h>
 #include "testing.h"
 #include "client.h"
-#include <time.h>
+//#include <time.h>
 
 char *hostname;
 char *tcpport;
@@ -457,56 +457,60 @@ void test_get_head()
 void test_gets(uint8_t* keys, uint32_t* values, uint64_t numpairs)
 {
   cache_t cache = create_cache(numpairs*10);
+
   char **keystrings = calloc(numpairs,sizeof(char*));
+  char **valstrings = calloc(numpairs,sizeof(char*));
 
   for(int i = 0; i < numpairs; ++i)
     {
       keystrings[i] = calloc(keys[i],1);
-      char value[values[i]];
-      memset(keystrings[i],'K',keys[i] - 1);
-      memset(value,'V',values[i] - 1);
+      valstrings[i] = calloc(values[i],1);
+      memset(keystrings[i],'K',keys[i]);
+      memset(valstrings[i],'V',values[i]);
       keystrings[i][keys[i] - 1] = '\0';
-      value[values[i] - 1] = '\0';
-      cache_set(cache,keystrings[i],value,values[i]);
+      valstrings[i][values[i] - 1] = '\0';
+      cache_set(cache,keystrings[i],valstrings[i],values[i]);
+      free(valstrings[i]);
     }
+  free(valstrings);
 
   uint32_t val_size = 0;
 
   // Get the timebase info
-  //mach_timebase_info_data_t info;
-  //mach_timebase_info(&info);
+  mach_timebase_info_data_t info;
+  mach_timebase_info(&info);
 
   uint64_t errors = 0;
   const uint64_t requests = numpairs;
   const double nsToSec = 1000000000;
   const uint32_t nsToms = 1000000;
-  //uint64_t start = mach_absolute_time();
-  struct timespec start, end;
-  clock_gettime(CLOCK_MONOTONIC,&start);
+  uint64_t start = mach_absolute_time();
+  //struct timespec start, end;
+  //clock_gettime(CLOCK_MONOTONIC,&start);
   for(int i = 0; i < requests; ++i)
     {
-      cache_get(cache,keystrings[i],&val_size);
-      if( val_size == 0) ++errors;
-      val_size = 0;
+      if( cache_get(cache,keystrings[i],&val_size) == -1) ++errors;
+      //if( val_size == 0) ++errors;
+      //val_size = 0;
     }
-  //uint64_t end = mach_absolute_time();
-  clock_gettime(CLOCK_MONOTONIC,&end);
-  //uint64_t duration = end - start - errors*10*nsToSec;
-  uint64_t duration = (end.tv_sec * nsToSec + end.tv_nsec) - (start.tv_sec * nsToSec + start.tv_nsec);
+  uint64_t end = mach_absolute_time();
+  //clock_gettime(CLOCK_MONOTONIC,&end);
+  uint64_t duration = end - start;
+  //uint64_t duration = (end.tv_sec * nsToSec + end.tv_nsec) - (start.tv_sec * nsToSec + start.tv_nsec);
 
   // Convert to nanoseconds
-  //duration *= info.numer;
-  //duration /= info.denom;
+  duration *= info.numer;
+  duration /= info.denom;
 
   uint64_t ns = duration;
-  double time_elapsed_sec = duration / nsToSec;
+  double time_elapsed_sec = (double) duration / nsToSec;
 
-  double requests_per_second = requests / time_elapsed_sec;
+  double requests_per_second = (double) requests / time_elapsed_sec;
   double ms = (double) ns / (requests * nsToms);
 
   printf("Time per Get: %f milliseconds\n",ms);
   printf("Requests per second: %f requests\n",requests_per_second);
-  printf("Percent of Requests that failed: %f\n",((double)errors/requests));
+  printf("Percent of Requests that failed: %f,%d,%d\n",((double)errors/requests),errors,requests);
 
   destroy_cache(cache);
 }
@@ -517,7 +521,8 @@ int main(int argc, char *argv[])
   hostname = "134.10.103.234";
   tcpport = "2001";
   udpport = "3001";
-  /*  for(int i = 2;i < argc; ++i)
+  /*
+      for(int i = 2;i < argc; ++i)
     {
       if(!strcmp(argv[i],"-h"))
         hostname = argv[i+1];
@@ -527,12 +532,29 @@ int main(int argc, char *argv[])
         udpport = argv[i+1];
     }
   */
-  int i,j = 0;
-  uint64_t numpairs = (argc - 1)/2;
+
+  int i = 0,j = 0;
+  uint8_t k;
+  uint32_t l;
+  uint64_t numpairs = atoi(argv[1]);
   uint8_t *keys = calloc(numpairs,sizeof(uint8_t));
   uint32_t *values = calloc(numpairs,sizeof(uint32_t));
-  for( i = 1; argv[i] != '\n'; ++i) keys[i-1] = argv[i];
-  for( ; i < argc; ++i) values[j++] = argv[i];
+
+  while (scanf("%d",&k) == 1)
+    {
+      if( i >= numpairs - 1)
+        break;
+
+      keys[i++] = k;
+    }
+
+  while (scanf("%d",&l) == 1)
+    {
+      if( j >= numpairs )
+        break;
+
+      values[j++] = l;
+    }
 
 
   /*
