@@ -33,14 +33,14 @@ def cache_get(key,s):
         try:
                 s.sendto(msg, (host,port))
                 d = s.recvfrom(1024)
-        except socket.error:
-                print('Error Code')
-                sys.exit()
+        except (socket.error, socket.timeout):
+                print('Get Failed')
 
 def start_client(keys):
         # make socket
         try:
                 s = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
+                s.settimeout(1)
         except socket.error:
                 print('Failed to create socket')
                 sys.exit()
@@ -57,11 +57,13 @@ def test_gets(getsPerSec):
 
         # controversial number, this assumes each client will make a request every 2 ms
         # right now the mean response time is around 3ms so this needs to be changed/rethought
-        clients = getsPerSec//500
+        clients = getsPerSec//1000
+        if clients == 0:
+                clients = 1
 
         # gen keys and values
-        keys = gen_keys(1000)
-        vals = gen_vals(1000)
+        keys = gen_keys(getsPerSec)
+        vals = gen_vals(getsPerSec)
 
         cache_setup(keys,vals)
 
@@ -73,17 +75,12 @@ def test_gets(getsPerSec):
 
         # weird fucking python code that secretly runs the world in what, 10 or so lines?
         with concurrent.futures.ThreadPoolExecutor(max_workers=clients) as executor:
-
                 # Start the load operations and mark each "future" with its client id
                 future_to_client = {executor.submit(start_client, keys): client for client in range(0,clients)}
-
                 # as clients finish, collect mean_request times
                 # 'future' is an object returned by each job that holds the result
                 for future in concurrent.futures.as_completed(future_to_client):
-
-                        # find client id
                         client = future_to_client[future]
-
                         # get return value from each client
                         try:
                                 mean_request_time = future.result()
