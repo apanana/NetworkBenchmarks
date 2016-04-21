@@ -79,11 +79,10 @@ Our simulation aim's to mimic the workload of FB's memcache while varying the re
 
 ###Step 8 Design Experiments
 ##### Setup:
-We use Python's SciPy library to generate random variables for key and val size according the the distributions given in the paper. We then pipe these to our server to generate key/val pairs of corresponding size. We also pass this information to the client so that we generate requests for corresponding data in the server.
+We use Python's SciPy library to generate random variables for key and val size according the the distributions given in the paper. We also use a python script to handle setting up our server and clients.
 
 ##### Method:
-We use a python script to spawn multiple clients that draw requests from the same server. Each client is timed for the amount of time it takes complete all of its requests (we don't care about the error rate of UDP so much, as long as it doesn't look unrealistically high). This is then averaged to find a mean response time for requests.
-^^^ Need a way to manipulate request rate independently.
+Our python script first sets a specified number of key/val pairs in our cache and then spawns clients. Each client is timed for the amount of time it takes complete all of its requests (we don't care about the error rate of UDP so much, as long as it doesn't look unrealistically high). This is then averaged to find a mean response time for requests.
 
 ###Step 9 Analyze and Interpret Data
 ~~

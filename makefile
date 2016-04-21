@@ -1,4 +1,4 @@
-CC = gcc
+CC = gcc -std=gnu99
 
 # CFLAGS = -Wall -pedantic -Werror
 
@@ -8,17 +8,19 @@ all:
 	make set_client 
 	make get_client
 
+SERVER_FILES = src/server.c src/cache.c src/lru.c src/tcp.c src/udp.c
+
 server:
-	$(CC) -std=gnu99 server.c cache.c lru.c tcp.c udp.c -o $@
+	$(CC) $(SERVER_FILES) -o $@
 
 set_client:
-	$(CC) -std=gnu99 set_client.c client.c jsmn/jsmn.c tcp.c udp.c -o $@
+	$(CC) set_client.c client.c jsmn/jsmn.c tcp.c udp.c -o $@
  
 get_client:
-	$(CC) -std=gnu99 get_client.c client.c jsmn/jsmn.c tcp.c udp.c -o $@
+	$(CC) get_client.c client.c jsmn/jsmn.c tcp.c udp.c -o $@
 
-test_client:
-	$(CC) -std=gnu99 test_help.c client.c jsmn/jsmn.c tcp.c udp.c -o $@
+# test_client:
+# 	$(CC) test_help.c client.c jsmn/jsmn.c tcp.c udp.c -o $@
 
 clean_server:
 	rm server
