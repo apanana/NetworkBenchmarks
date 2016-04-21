@@ -32,28 +32,29 @@ void test_gets(uint8_t* keys, uint32_t* values, uint64_t numpairs)
 
 int main(int argc, char *argv[])
 {
-  hostname = "134.10.103.234";
+  hostname = "134.10.103.229";
   tcpport = "2001";
   udpport = "3001";
+
   int i = 0,j = 0;
   uint8_t k;
-  uint32_t l;
+  uint32_t v;
   uint64_t numpairs = atoi(argv[1]);
   uint8_t *keys = calloc(numpairs,sizeof(uint8_t));
   uint32_t *values = calloc(numpairs,sizeof(uint32_t));
-  while (scanf("%d",&k) == 1)
-    {
-      if( i >= numpairs - 1)
-        break;
+  while (scanf("%"PRIu8,&k) == 1)
+  {
+    keys[i++] = k;
+    if( i >= numpairs )
+      break;     
+  }
 
-      keys[i++] = k;
-    }
-  while (scanf("%d",&l) == 1)
+  while (scanf("%"PRIu32,&v) == 1)
     {
+      values[j++] = v;
       if( j >= numpairs )
         break;
-
-      values[j++] = l;
     }
+
   test_gets(keys,values,numpairs); //udp test
 }
