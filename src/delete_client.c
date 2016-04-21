@@ -2,7 +2,8 @@
 #include <stdint.h>
 #include <assert.h>
 #include <stdlib.h>
-#include <mach/mach_time.h>
+//#include <mach/mach_time.h>
+#include <time.h>
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -11,7 +12,7 @@
 #include <netdb.h>
 #include <unistd.h>
 #include <errno.h>
-#include "client.h"
+#include "cache.h"
 char *hostname;
 char *tcpport;
 char *udpport;
@@ -75,7 +76,7 @@ void test_gets(uint8_t* keys, uint64_t numpairs)
   clock_gettime(CLOCK_MONOTONIC,&start);
   for(int i = 0; i < requests; ++i)
     {
-      if( cache_delete(cache,keystrings[i]) == -1) ++errors;
+      cache_delete(cache,keystrings[i]);
       //if( val_size == 0) ++errors;
       //val_size = 0;
     }
@@ -96,7 +97,7 @@ void test_gets(uint8_t* keys, uint64_t numpairs)
 
   printf("Time per Get: %f milliseconds\n",ms);
   printf("Requests per second: %f requests\n",requests_per_second);
-  printf("Percent of Requests that failed: %f,%d,%d\n",((double)errors/requests),errors,requests);
+  printf("Percent of Requests that failed: %f,%d,%d\n",((double)errors/requests));
 }
 
 int main(int argc, char *argv[])
