@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <assert.h>
 #include <stdlib.h>
-//#include <mach/mach_time.h>
 #include "cache.h"
 #include <time.h>
 
