@@ -85,7 +85,13 @@ We use Python's SciPy library to generate random variables for key and val size 
 Our python script first sets a specified number of key/val pairs in our cache and then spawns clients. Each client is timed for the amount of time it takes complete all of its requests (we don't care about the error rate of UDP so much, as long as it doesn't look unrealistically high). This is then averaged to find a mean response time for requests.
 
 ###Step 9 Analyze and Interpret Data
-~~
+##### Table of results: 
+| SERVICE | GET | SET | DELETE |
+| --- | --- | --- | --- |
+| Average response time (msec) | 0.283 | 0.685 | 0.5486 |
+| Total Load (requests/sec) | 17700 | 7300 | 9110 |
+| Failure rate (%) | 4.96 | N/A | N/A |
+(All values are 3 sig. figs.)
 
 ###Step 10 Present Results
 See above.
