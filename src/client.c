@@ -9,8 +9,8 @@
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
-#include "client.h"
-#include "jsmn/jsmn.h"
+#include "cache.h"
+#include "../jsmn/jsmn.h"
 #include "udp.h"
 #include "tcp.h"
 
@@ -169,7 +169,10 @@ val_type cache_get(cache_t cache, key_type key, uint32_t *val_size)
 
   //send it off
   if ( senddgrams(udpfd,sendbuff,strlen(sendbuff) + 1,cache->udpinfo->ai_addr,cache->udpinfo->ai_addrlen) < 0)
-    return NULL;
+    {
+      close(udpfd);
+      return NULL;
+    }
 
   free(sendbuff);
 
@@ -177,7 +180,8 @@ val_type cache_get(cache_t cache, key_type key, uint32_t *val_size)
   char *recvbuff = recvdgrams(udpfd,cache->udpinfo->ai_addr);
   if(recvbuff == NULL)
     {
-      return NULL;
+      close(udpfd);
+      return -1;
     }
 
   //printf("Server Response: %s\n",recvbuff);
@@ -208,7 +212,7 @@ void cache_delete(cache_t cache, key_type key)
   int buffsize = strlen(key) + 10;
   char *sendbuff = calloc(buffsize,1);
   sprintf(sendbuff,"DELETE /%s",key);
-  printf("Client Request: %s\n",sendbuff);
+  //printf("Client Request: %s\n",sendbuff);
 
   //send
   sendbuffer(socket_fd,sendbuff,buffsize);
@@ -216,7 +220,7 @@ void cache_delete(cache_t cache, key_type key)
 
   //receive
   char *recvbuff = recvbuffer(socket_fd);
-  printf("Server Response: %s\n",recvbuffer);
+  //printf("Server Response: %s\n",recvbuffer);
 
   free(recvbuff);
 

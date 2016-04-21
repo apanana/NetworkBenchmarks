@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <time.h>
+#include <inttypes.h>
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -25,34 +26,9 @@ struct cache_obj
   struct addrinfo *udpinfo;
 };
 
-cache_t make_cache(uint64_t maxmem)
-{
-  //create local cache object
-  cache_t cache = calloc(1,sizeof(struct cache_obj));
-  cache->host = hostname;
-  cache->udpport = udpport;
-  cache->udpinfo = calloc(1,sizeof(struct addrinfo));
-
-  struct addrinfo hints;
-  
-  int status;
-
-  memset(&hints, 0, sizeof(hints));
-  hints.ai_family = AF_UNSPEC;
-  hints.ai_socktype = SOCK_DGRAM;
-  if ((status = getaddrinfo(cache->host, "3001", &hints, &cache->udpinfo)) != 0)
-    {
-      fprintf(stderr, "getaddrinfo for udp: %s\n", gai_strerror(status));
-      freeaddrinfo(cache->udpinfo);
-      free(cache);
-      exit(1);
-    }
-  return cache;
-}
-
 void test_gets(uint8_t* keys, uint64_t numpairs)
 {
-  cache_t cache = make_cache(0);
+  cache_t cache = create_cache(numpairs*10);
   char **keystrings = calloc(numpairs,sizeof(char*));
 
   for(int i = 0; i < numpairs; ++i)
@@ -61,32 +37,20 @@ void test_gets(uint8_t* keys, uint64_t numpairs)
       memset(keystrings[i],'K',keys[i]);
       keystrings[i][keys[i] - 1] = '\0';
     }
-
-  // Get the timebase info
-  // mach_timebase_info_data_t info;
-  // mach_timebase_info(&info);
+  uint32_t val_size = 0;
 
   uint64_t errors = 0;
   const uint64_t requests = numpairs;
   const double nsToSec = 1000000000;
   const uint32_t nsToms = 1000000;
-  // uint64_t start = mach_absolute_time();
   struct timespec start, end;
   clock_gettime(CLOCK_MONOTONIC,&start);
-  for(int i = 0; i < requests; ++i)
-    {
-      cache_delete(cache,keystrings[i]);
-      //if( val_size == 0) ++errors;
-      //val_size = 0;
-    }
-  // uint64_t end = mach_absolute_time();
-  clock_gettime(CLOCK_MONOTONIC,&end);
-  // uint64_t duration = end - start;
-  uint64_t duration = (end.tv_sec * nsToSec + end.tv_nsec) - (start.tv_sec * nsToSec + start.tv_nsec);
 
-  // Convert to nanoseconds
-  // duration *= info.numer;
-  // duration /= info.denom;
+  for(int i = 0; i < requests; ++i)
+    cache_delete(cache,keystrings[i]);
+
+  clock_gettime(CLOCK_MONOTONIC,&end);
+  uint64_t duration = (end.tv_sec * nsToSec + end.tv_nsec) - (start.tv_sec * nsToSec + start.tv_nsec);
 
   uint64_t ns = duration;
   double time_elapsed_sec = (double) duration / nsToSec;
@@ -96,7 +60,6 @@ void test_gets(uint8_t* keys, uint64_t numpairs)
 
   printf("Time per Get: %f milliseconds\n",ms);
   printf("Requests per second: %f requests\n",requests_per_second);
-  printf("Percent of Requests that failed: %f,%d,%d\n",((double)errors/requests));
 }
 
 int main(int argc, char *argv[])
@@ -117,13 +80,6 @@ int main(int argc, char *argv[])
     if( i >= numpairs )
       break;     
   }
-
-  while (scanf("%"PRIu32,&v) == 1)
-    {
-      values[j++] = v;
-      if( j >= numpairs )
-        break;
-    }
 
   test_gets(keys,numpairs); //udp test
 }

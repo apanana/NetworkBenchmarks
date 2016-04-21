@@ -9,7 +9,7 @@ all:
 	make delete_client
 
 SERVER_FILES = src/cache.c src/lru.c src/tcp.c src/udp.c
-CLIENT_FILES = src/client.c src/tcp.c src/udp.c
+CLIENT_FILES = src/client.c src/tcp.c src/udp.c jsmn/jsmn.c
 
 server:
 	$(CC) src/server.c $(SERVER_FILES) -o $@

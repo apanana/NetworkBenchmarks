@@ -115,7 +115,7 @@ char* recvdgrams(int fd, struct sockaddr_storage *from)
       bytes = recvfrom(fd,buffer,MAXLINE,0,(struct sockaddr *)from, &size);
       if(bytes == -1)
         {
-          printf("Read failed: %d\n",++fails);
+          //printf("Read failed: %d\n",++fails);
 	  free(response);
           return NULL;
         }

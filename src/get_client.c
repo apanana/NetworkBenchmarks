@@ -14,12 +14,15 @@
 #include <errno.h>
 #include "cache.h"
 char *hostname;
+char *tcpport;
 char *udpport;
 
 struct cache_obj
 {
   char* host;
+  char* tcpport;
   char* udpport;
+  struct addrinfo *tcpinfo;
   struct addrinfo *udpinfo;
 };
 
@@ -68,10 +71,8 @@ void test_gets(uint8_t* keys, uint64_t numpairs)
   clock_gettime(CLOCK_MONOTONIC,&start);
   for(int i = 0; i < requests; ++i)
     {
-      printf("%d\n",i);
       if( cache_get(cache,keystrings[i],&val_size) == -1) ++errors;
     }
-  printf("hi\n");
   clock_gettime(CLOCK_MONOTONIC,&end);
   uint64_t duration = (end.tv_sec * nsToSec + end.tv_nsec) - (start.tv_sec * nsToSec + start.tv_nsec);
 
@@ -83,7 +84,7 @@ void test_gets(uint8_t* keys, uint64_t numpairs)
 
   printf("Time per Get: %f milliseconds\n",ms);
   printf("Requests per second: %f requests\n",requests_per_second);
-  printf("Percent of Requests that failed: %f,%d,%d\n",((double)errors/requests));
+  printf("Percent of Requests that failed: %f\n",((double)errors/(double)requests));
 }
 
 int main(int argc, char *argv[])
@@ -103,13 +104,6 @@ int main(int argc, char *argv[])
     if( i >= numpairs )
       break;     
   }
-
-  while (scanf("%"PRIu32,&v) == 1)
-    {
-      values[j++] = v;
-      if( j >= numpairs )
-        break;
-    }
 
   test_gets(keys,numpairs); //udp test
 }
