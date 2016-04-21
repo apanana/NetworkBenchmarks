@@ -8,19 +8,19 @@ all:
 	make get_client
 	make delete_client
 
-SERVER_FILES = src/server.c src/cache.c src/lru.c src/tcp.c src/udp.c
+SOURCE_FILES = src/cache.c src/lru.c src/tcp.c src/udp.c
 
 server:
-	$(CC) $(SERVER_FILES) -o $@
+	$(CC) src/server.c $(SOURCE_FILES) -o $@
 
 set_client:
-	$(CC) set_client.c client.c jsmn/jsmn.c tcp.c udp.c -o $@
+	$(CC) src/set_client.c $(SOURCE_FILES) -o $@
  
 get_client:
-	$(CC) get_client.c client.c jsmn/jsmn.c tcp.c udp.c -o $@
+	$(CC) src/get_client.c $(SOURCE_FILES) -o $@
 
 delete_client:
-	$(CC) delete_client.c client.c jsmn/jsmn.c tcp.c udp.c -o $@
+	$(CC) src/delete_client.c $(SOURCE_FILES) -o $@
 
 clean_server:
 	rm server
