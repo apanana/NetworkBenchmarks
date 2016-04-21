@@ -4,9 +4,9 @@ CC = gcc -std=gnu99
 
 all:
 	make server 
-	# make test_client
 	make set_client 
 	make get_client
+	make delete_client
 
 SERVER_FILES = src/server.c src/cache.c src/lru.c src/tcp.c src/udp.c
 
@@ -19,16 +19,15 @@ set_client:
 get_client:
 	$(CC) get_client.c client.c jsmn/jsmn.c tcp.c udp.c -o $@
 
-# test_client:
-# 	$(CC) test_help.c client.c jsmn/jsmn.c tcp.c udp.c -o $@
+delete_client:
+	$(CC) delete_client.c client.c jsmn/jsmn.c tcp.c udp.c -o $@
 
 clean_server:
 	rm server
 
 clean_clients:
-	rm set_client get_client
+	rm set_client get_client delete_client
 
 clean:
-	rm server set_client get_client
-	# rm server set_client get_client test_client
+	rm server set_client get_client delete_client
 
