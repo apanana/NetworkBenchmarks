@@ -34,8 +34,8 @@ void test_gets(uint8_t* keys, uint32_t* values, uint64_t numpairs)
   uint32_t val_size = 0;
 
   // Get the timebase info
-  mach_timebase_info_data_t info;
-  mach_timebase_info(&info);
+  // mach_timebase_info_data_t info;
+  // mach_timebase_info(&info);
 
   uint64_t errors = 0;
   const uint64_t requests = numpairs;
@@ -56,8 +56,8 @@ void test_gets(uint8_t* keys, uint32_t* values, uint64_t numpairs)
   uint64_t duration = (end.tv_sec * nsToSec + end.tv_nsec) - (start.tv_sec * nsToSec + start.tv_nsec);
 
   // Convert to nanoseconds
-  duration *= info.numer;
-  duration /= info.denom;
+  // duration *= info.numer;
+  // duration /= info.denom;
 
   uint64_t ns = duration;
   double time_elapsed_sec = (double) duration / nsToSec;
@@ -72,33 +72,6 @@ void test_gets(uint8_t* keys, uint32_t* values, uint64_t numpairs)
   destroy_cache(cache);
 }
 
-uint8_t *key_gen(uint64_t numpairs){
-  uint8_t k;
-  uint8_t *keys = calloc(numpairs,sizeof(uint8_t));
-  int i = 0;
-  while (scanf("%"PRIu8,&k) == 1)
-  {
-    keys[i++] = k;
-    if( i >= numpairs )
-      break;     
-  }
-  return keys;
-}
-
-uint32_t *val_gen(uint64_t numpairs){
-  uint32_t v;
-  uint32_t *values = calloc(numpairs,sizeof(uint32_t));
-  int i = 0;
-  while (scanf("%"PRIu32,&v) == 1)
-    {
-      values[i++] = v;
-      if( i >= numpairs )
-        break;
-    }
-  return values;
-}
-
-
 int main(int argc, char *argv[])
 {
   hostname = "134.10.103.229";
@@ -107,20 +80,23 @@ int main(int argc, char *argv[])
 
   int i = 0,j = 0;
   uint8_t k;
-  uint32_t l;
+  uint32_t v;
   uint64_t numpairs = atoi(argv[1]);
   uint8_t *keys = calloc(numpairs,sizeof(uint8_t));
   uint32_t *values = calloc(numpairs,sizeof(uint32_t));
+  while (scanf("%"PRIu8,&k) == 1)
+  {
+    keys[i++] = k;
+    if( i >= numpairs )
+      break;     
+  }
 
-  keys = key_gen(numpairs);
-  values = val_gen(numpairs);
-  // for(;i<numpairs;i++){
-  //   printf("i: %d, %d \n",i,keys[i]);
-  // }
-  // printf("\n");
-  // for(;j<numpairs;j++){
-  //   printf("j: %d, %d \n",j,values[j]);
-  // }
+  while (scanf("%"PRIu32,&v) == 1)
+    {
+      values[j++] = v;
+      if( j >= numpairs )
+        break;
+    }
 
   test_gets(keys,values,numpairs); //udp test
 }
