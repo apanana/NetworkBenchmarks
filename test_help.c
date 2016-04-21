@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <assert.h>
 #include <stdlib.h>
-#include <mach/mach_time.h>
+// #include <mach/mach_time.h>
 #include <inttypes.h>
 
 #include "client.h"
-//#include <time.h>
+#include <time.h>
 
 char *hostname;
 char *tcpport;
@@ -41,19 +41,19 @@ void test_gets(uint8_t* keys, uint32_t* values, uint64_t numpairs)
   const uint64_t requests = numpairs;
   const double nsToSec = 1000000000;
   const uint32_t nsToms = 1000000;
-  uint64_t start = mach_absolute_time();
-  //struct timespec start, end;
-  //clock_gettime(CLOCK_MONOTONIC,&start);
+  // uint64_t start = mach_absolute_time();
+  struct timespec start, end;
+  clock_gettime(CLOCK_MONOTONIC,&start);
   for(int i = 0; i < requests; ++i)
     {
       if( cache_get(cache,keystrings[i],&val_size) == -1) ++errors;
       //if( val_size == 0) ++errors;
       //val_size = 0;
     }
-  uint64_t end = mach_absolute_time();
-  //clock_gettime(CLOCK_MONOTONIC,&end);
-  uint64_t duration = end - start;
-  //uint64_t duration = (end.tv_sec * nsToSec + end.tv_nsec) - (start.tv_sec * nsToSec + start.tv_nsec);
+  // uint64_t end = mach_absolute_time();
+  clock_gettime(CLOCK_MONOTONIC,&end);
+  // uint64_t duration = end - start;
+  uint64_t duration = (end.tv_sec * nsToSec + end.tv_nsec) - (start.tv_sec * nsToSec + start.tv_nsec);
 
   // Convert to nanoseconds
   duration *= info.numer;
@@ -79,9 +79,8 @@ uint8_t *key_gen(uint64_t numpairs){
   while (scanf("%"PRIu8,&k) == 1)
   {
     keys[i++] = k;
-    if( i >= numpairs){
+    if( i >= numpairs )
       break;     
-    }
   }
   return keys;
 }
@@ -92,9 +91,9 @@ uint32_t *val_gen(uint64_t numpairs){
   int i = 0;
   while (scanf("%"PRIu32,&v) == 1)
     {
+      values[i++] = v;
       if( i >= numpairs )
         break;
-      values[i++] = v;
     }
   return values;
 }
@@ -102,7 +101,7 @@ uint32_t *val_gen(uint64_t numpairs){
 
 int main(int argc, char *argv[])
 {
-  hostname = "134.10.103.234";
+  hostname = "134.10.103.229";
   tcpport = "2001";
   udpport = "3001";
 
@@ -115,13 +114,13 @@ int main(int argc, char *argv[])
 
   keys = key_gen(numpairs);
   values = val_gen(numpairs);
-  for(;i<numpairs;i++){
-    printf("i: %d, %d \n",i,keys[i]);
-  }
-  printf("\n");
-  for(;j<numpairs;j++){
-    printf("j: %d, %d \n",j,values[j]);
-  }
+  // for(;i<numpairs;i++){
+  //   printf("i: %d, %d \n",i,keys[i]);
+  // }
+  // printf("\n");
+  // for(;j<numpairs;j++){
+  //   printf("j: %d, %d \n",j,values[j]);
+  // }
 
-  // test_gets(keys,values,numpairs); //udp test
+  test_gets(keys,values,numpairs); //udp test
 }
