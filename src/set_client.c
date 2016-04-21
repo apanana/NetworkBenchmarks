@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <assert.h>
 #include <stdlib.h>
-#include <mach/mach_time.h>
+// #include <mach/mach_time.h>
+#include <time.h>
 #include "cache.h"
 
 char *hostname;
