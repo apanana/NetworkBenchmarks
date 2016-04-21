@@ -12,7 +12,7 @@
 #include <netdb.h>
 #include <unistd.h>
 #include <errno.h>
-#include "client.h"
+#include "cache.h"
 char *hostname;
 char *tcpport;
 char *udpport;
@@ -76,7 +76,7 @@ void test_gets(uint8_t* keys, uint64_t numpairs)
   clock_gettime(CLOCK_MONOTONIC,&start);
   for(int i = 0; i < requests; ++i)
     {
-      if( cache_delete(cache,keystrings[i]) == -1) ++errors;
+      cache_delete(cache,keystrings[i]);
       //if( val_size == 0) ++errors;
       //val_size = 0;
     }

@@ -12,7 +12,7 @@
 #include <netdb.h>
 #include <unistd.h>
 #include <errno.h>
-#include "client.h"
+#include "cache.h"
 char *hostname;
 char *tcpport;
 char *udpport;
