@@ -78,11 +78,9 @@ Our simulation aim's to mimic the workload of FB's memcache while varying the re
 
 
 ###Step 8 Design Experiments
-##### Setup:
-We use Python's SciPy library to generate random variables for key and val size according the the distributions given in the paper. We also use a python script to handle setting up our server and clients.
+We used all of the polytopia computers to test our cache. One computer ran the server while the others acted as clients. We synchronized start times of each client and averaged all mean response times over all clients as well as the calculated number of requests per second. 
 
-##### Method:
-Our python script first sets a specified number of key/val pairs in our cache and then spawns clients. Each client is timed for the amount of time it takes complete all of its requests (we don't care about the error rate of UDP so much, as long as it doesn't look unrealistically high). This is then averaged to find a mean response time for requests.
+In order to simulate the memcache workload we replicated a generalized extreme value distribution (mu = 30.7984, sigma = 8.20449, k = 0.078688) for the keys and a generalized pareto distribution (theta = 0, sigma = 214.476, k = 0.348238) for the values, the same distributions used in the memcache workload analysis paper (Frachtenberg et al.).
 
 ###Step 9 Analyze and Interpret Data
 ##### Table of results: 
@@ -92,6 +90,8 @@ Our python script first sets a specified number of key/val pairs in our cache an
 | Total Load (requests/sec) | 17700 | 7300 | 9110 |
 | Failure rate (%) | 4.96 | N/A | N/A |
 (All values are 3 sig. figs.)
+
+Due to the limited resources of polytopia we were not able to reach our maximum load, in fact, we couldn't even get close.  We were, however, able to approach a millisecond if our server took its good old time to display all of the clients' requests and its responses.
 
 ###Step 10 Present Results
 See above.
