@@ -85,12 +85,12 @@ In order to simulate the memcache workload we replicated a generalized extreme v
 ###Step 9 Analyze and Interpret Data
 ##### Table of results: 
 | SERVICE | GET | SET | DELETE | GET* |
-| --- | --- | --- | --- |
+| --- | --- | --- | --- | --- |
 | Average response time (msec) | 0.283 | 0.685 | 0.5486 | 0.4382 |
 | Total Load (requests/sec) | 17700 | 7300 | 9110 | 11438 |
 | Failure rate (%) | 4.96 | N/A | N/A | 8.414 |
 (All values are 3 sig. figs.)
-`GET *` refers to us rerunning tests on GET while making sure that every single GET request is actually something that exists in the cache.
+`GET *` refers to us rerunning tests on GET while making sure that every single GET request is actually something that exists in the cache. We suspect that a portion of the increased time might be due to other clients still sending SET requests after the timed client begins its timing cycle. This would probably be only a negligible amount of increase, but we may make changes to our experimental design later to better maintain independency and contamination like this. 
 
 Due to the limited resources of polytopia we were not able to reach our maximum load, in fact, we couldn't even get close.  We were, however, able to approach a millisecond if our server took its good old time to display all of the clients' requests and its responses.
 
