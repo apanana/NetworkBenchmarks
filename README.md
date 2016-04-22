@@ -82,7 +82,6 @@ We used all of the polytopia computers to test our cache. One computer ran the s
 
 In order to simulate the memcache workload we replicated a generalized extreme value distribution (mu = 30.7984, sigma = 8.20449, k = 0.078688) for the keys and a generalized pareto distribution (theta = 0, sigma = 214.476, k = 0.348238) for the values, the same distributions used in the memcache workload analysis paper (Frachtenberg et al.).
 
-Our 
 
 ###Step 9 Analyze and Interpret Data
 ##### Table of results: 
